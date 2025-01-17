@@ -31,10 +31,12 @@ def verifyIntroduction():
 def logIn():
     global user
     user.log_in()
+    start()
 
 def signUp():
     global user
     user.create_new_user()
+    startNewBudget()
 
 def startNewBudget():
     global track
