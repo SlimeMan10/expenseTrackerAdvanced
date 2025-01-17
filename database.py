@@ -3,7 +3,6 @@ import hashlib
 import secrets
 from errors.userNameError import UsernameAlreadyExistsError
 
-
 class Database:
     def __init__(self):
         self.db_path = 'db/expense_tracker.db'
@@ -134,3 +133,48 @@ class Database:
 
     def __generate_salt(self):
         return secrets.token_bytes(16)  # Return salt as bytes
+    
+    def setBudget(self, username, budget):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            #lets get the current spent to check if the new budget is higher than the current spent
+            currentSpend = self.getCurrentSpent(username)
+            if budget < currentSpend:
+                print("Error: New budget should be higher than the current spent.")
+                return
+            budgetQuery = "UPDATE Users SET budget = ? WHERE user_name = ?"
+            cursor.execute(budgetQuery, [budget, username])
+            connection.commit()
+            print(f"Budget updated for user '{username}'.")
+        except Exception as error:
+            print(f"Error updating budget: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def getCurrentBudget(self, username):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            budgetQuery = "SELECT budget FROM Users WHERE user_name =?"
+            cursor.execute(budgetQuery, [username])
+            budget = cursor.fetchone()[0]
+            print(f"Current budget for user '{username}': ${budget}")
+        except Exception as error:
+            print(f"Error getting current budget: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def getCurrentSpent(self, username):
+        connection, cursor= None, None
+        try:
+            connection, cursor = self.__createConnection()
+            spendQuery = "SELECT totalSpent FROM Users WHERE user_name =?"
+            cursor.execute(spendQuery, [username])
+            currentSpend = cursor.fetchone()[0]
+            return currentSpend if currentSpend else 0
+        except Exception as error:
+            print(f"Error getting current spent: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
+            

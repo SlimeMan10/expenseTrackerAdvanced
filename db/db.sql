@@ -7,6 +7,8 @@ CREATE TABLE Users (
     role_name VARCHAR(255) DEFAULT 'user',
     hash BLOB NOT NULL,
     salt BLOB NOT NULL,
+    budget NUMBER NOT NULL,
+    totalSpent NUMBER DEFAULT 0,
     FOREIGN KEY (role_name) REFERENCES Roles(role_name) ON DELETE CASCADE
 );
 

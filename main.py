@@ -1,10 +1,8 @@
 from backendMain import Tracker as tracker
-from user import User
 
 # Constants
 totalChoices = 8
-track = None  # Global tracker track
-user = User()
+track = tracker()  # Global tracker track
 
 # Entry Point
 def init():
@@ -29,13 +27,13 @@ def verifyIntroduction():
         signUp()
 
 def logIn():
-    global user
-    user.log_in()
+    global track
+    track.logIn()
     start()
 
 def signUp():
-    global user
-    user.create_new_user()
+    global track
+    track.signUp()
     startNewBudget()
 
 def startNewBudget():
@@ -49,7 +47,6 @@ def startNewBudget():
             break
         except ValueError:
             print("Enter a valid positive number")
-    track = tracker(num)
     start()
 
 def start():
@@ -88,7 +85,7 @@ def checkOptions(choice):
 
 def printBudget():
     global track
-    print(track.getBudget())
+    track.getCurrentBudget()
 
 def getRemainingBudget():
     global track
