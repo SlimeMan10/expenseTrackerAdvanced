@@ -89,7 +89,7 @@ def printBudget():
 
 def getRemainingBudget():
     global track
-    print(track.getRemainingBudget())
+    track.getCurrentSpending()
 
 def addExpense():
     global track
@@ -193,7 +193,7 @@ def printOptions():
     print("5. Save current tracker")
     print("6. Change budget")
     print("7. View current budget")
-    print("8. View remaining budget")
+    print("8. View current spent amount")
     print("0. Exit")
 
 # Graceful exit for keyboard interrupt

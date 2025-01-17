@@ -172,7 +172,7 @@ class Database:
             spendQuery = "SELECT totalSpent FROM Users WHERE user_name =?"
             cursor.execute(spendQuery, [username])
             currentSpend = cursor.fetchone()[0]
-            return currentSpend if currentSpend else 0
+            print(f"{username}'s current total spent: ${currentSpend}")
         except Exception as error:
             print(f"Error getting current spent: {error}")
         finally:

@@ -10,6 +10,9 @@ class Tracker:
         """Get the current budget for the logged-in user."""
         self.user.getCurrentBudget()
 
+    def getCurrentSpending(self):
+        self.user.getCurrentSpending()
+
     def logIn(self):
         self.user.log_in()
     
