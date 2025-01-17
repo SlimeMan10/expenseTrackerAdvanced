@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./public/backend/errors",
+        "./public/backend",
+        "./public/models/errors"
+    ]
+}

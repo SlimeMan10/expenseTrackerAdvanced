@@ -1,14 +1,19 @@
-from tracker import tracker
+from backendMain import Tracker as tracker
+from user import User
 
 # Constants
 totalChoices = 8
-object = None  # Global tracker object
+track = None  # Global tracker track
+user = User()
 
 # Entry Point
 def init():
-    print("This is my budget tracker")
-    print("1. Load data")
-    print("2. Start with new data")
+    print("Expense Tracker")
+    print("1. Log In")
+    print("2. Sign Up")
+    verifyIntroduction()
+
+def verifyIntroduction():
     while True:
         try:
             num = int(input("Option: "))
@@ -19,22 +24,19 @@ def init():
             print("Enter a valid number (1 or 2)")
             print()
     if num == 1:
-        readFile()
+        logIn()
     else:
-        startNewBudget()
+        signUp()
 
-#TODO
-#Assume that the file is valid and the user is giving it with the .txt extension
-def readFile():
-    global object
-    object = tracker() # dummy to get it started
-    fileName = input("What is the name of the file you want to load?: ")
-    object.upload(fileName)
-    print("Data loaded successfully!")
-    start()
+def logIn():
+    global user
+    user.log_in()
+
+def signUp():
+    print()
 
 def startNewBudget():
-    global object
+    global track
     print("Starting new budget")
     while True:
         try:
@@ -44,7 +46,7 @@ def startNewBudget():
             break
         except ValueError:
             print("Enter a valid positive number")
-    object = tracker(num)
+    track = tracker(num)
     start()
 
 def start():
@@ -64,34 +66,33 @@ def start():
         checkOptions(choice)
 
 def checkOptions(choice):
-    match choice:
-        case 1:
-            addExpense()
-        case 2:
-            removeExpense()
-        case 3:
-            reviewAll()
-        case 4:
-            reviewCategory()
-        case 5:
-            save()
-        case 6:
-            updateBudget()
-        case 7:
-            printBudget()
-        case 8:
-            getRemainingBudget()
+    if choice == 1:
+        addExpense()
+    elif choice == 2:
+        removeExpense()
+    elif choice == 3:
+        reviewAll()
+    elif choice == 4:
+        reviewCategory()
+    elif choice == 5:
+        save()
+    elif choice == 6:
+        updateBudget()
+    elif choice == 7:
+        printBudget()
+    elif choice == 8:
+        getRemainingBudget()
 
 def printBudget():
-    global object
-    print(object.getBudget())
+    global track
+    print(track.getBudget())
 
 def getRemainingBudget():
-    global object
-    print(object.getRemainingBudget())
+    global track
+    print(track.getRemainingBudget())
 
 def addExpense():
-    global object
+    global track
     category = getCategory()
     name = input("What is the name of the expense? ")
     while True:
@@ -102,14 +103,14 @@ def addExpense():
             break
         except ValueError:
             print("Enter a valid price")
-    object.add_expense(category, name, price)
+    track.add_expense(category, name, price)
     print(f"Added '{name}' (${price}) to category '{category}'.")
 
 def removeExpense():
-    global object
+    global track
     category = getCategory()
-    object.printCategory(category)
-    size = object.sizeOfCategory(category)
+    track.printCategory(category)
+    size = track.sizeOfCategory(category)
     if (size == 0):
         print("Category is empty")
     else:
@@ -121,17 +122,17 @@ def removeExpense():
                 break
             except ValueError:
                 print("Enter a valid number")
-        object.remove_expense(category, index-1)
+        track.remove_expense(category, index-1)
         print("Expense removed successfully.")
 
 def reviewAll():
-    global object
-    object.printAll()
+    global track
+    track.printAll()
 
 def reviewCategory():
-    global object
+    global track
     category = getCategory()
-    object.printCategory(category)
+    track.printCategory(category)
 
 def getCategory():
     while True:
@@ -143,13 +144,18 @@ def getCategory():
             break
         except ValueError:
             print("Enter a valid number between 1 and 6")
-    match item:
-        case 1: return "food"
-        case 2: return "transport"
-        case 3: return "shopping"
-        case 4: return "entertainment"
-        case 5: return "travel"
-        case 6: return "technology"
+    if item == 1:
+        return "food"
+    elif item == 2:
+        return "transport"
+    elif item == 3:
+        return "shopping"
+    elif item == 4:
+        return "entertainment"
+    elif item == 5:
+        return "travel"
+    elif item == 6:
+        return "technology"
 
 def printCategories():
     print("1. Food")
@@ -161,12 +167,12 @@ def printCategories():
 
 #TODO
 def save():
-    global object
+    global track
     name = input("What will your file name be: ")
-    object.save(name)
+    track.save(name)
 
 def updateBudget():
-    global object
+    global track
     while True:
         try:
             num = float(input("Enter your new budget (must be greater than zero): "))
@@ -175,7 +181,7 @@ def updateBudget():
             break
         except ValueError:
             print("Enter a valid positive number")
-    object.setNewBudget(num)
+    track.setNewBudget(num)
     print(f"New budget set to ${num:.2f}")
 
 def printOptions():

@@ -1,0 +1,15 @@
+Key Features:
+	•	User Roles:
+	•	    Admin: Manages all users, budgets, and categories.
+	•	    Regular User: Manages their personal expenses and budgets.
+	•	Secure Authentication:
+	•	    Implement hashed passwords for user accounts.
+	•	Expense Categorization:
+	•	    Allow custom categories for users.
+	•	Reports (Text-Based):
+	•	    Generate summaries like total expenses by category or timeframe (e.g., monthly).
+	•	File Export:
+	•	    Export reports to text or CSV files.
+
+what will need to be reworked:
+    1. we will need to redo the categories and create a custom category for user input
