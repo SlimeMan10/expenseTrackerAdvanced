@@ -19,22 +19,17 @@ class User:
                 print(f"Welcome, {user_name}!")
                 break
             elif condition == 1:
-                print("Username was incorrect.")
                 user_name = self._verify_input("Enter your username: ", "Username cannot be empty")
             else:
-                print("Password was incorrect.")
                 password = self._verify_input("Enter your password: ", "Password cannot be empty")
 
     def create_new_user(self):
-        """Creates a new user in the database."""
         global db
-        user_name = self._verify_input("Enter your username: ", "Username cannot be empty")
 
         while True:
-            if db.checkUserName(user_name):  # Use public method
+            user_name = self._verify_input("Enter your username: ", "Username cannot be empty")
+            if not db.checkUserName(user_name):  # Use public method
                 break
-            print("Username is already taken.")
-            user_name = self._verify_input("Enter a new username: ", "Username cannot be empty")
 
         password = self._verify_input("Enter password: ", "Password cannot be empty")
         db.create_new_user(user_name, password)

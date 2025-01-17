@@ -22,12 +22,14 @@ class Database:
             connection.close()
 
     def logIn(self, username, password):
+        """Authenticate a user."""
         connection, cursor = None, None
         try:
             connection, cursor = self.__createConnection()
             
             # Check if the user exists
-            if not self.checkUserName(username):
+            user_record = self.checkUserName(username)
+            if not user_record:
                 print("Username does not exist.")
                 return 1  # Username not found
 
@@ -36,18 +38,28 @@ class Database:
             cursor.execute(password_query, [username])
             result = cursor.fetchone()
 
-            if result is None:
-                print("Error: User record could not be retrieved.")
-                return 1  # Username not found
+            if not result:
+                print("Error: Could not retrieve user credentials.")
+                return -1  # General error
 
             stored_hash, stored_salt = result
 
-            # Ensure salt is in bytes
+            # Debugging output
+            print(f"Stored hash: {stored_hash}")
+            print(f"Stored salt (hex): {stored_salt}")
+
+            # Ensure the salt is in bytes
             if isinstance(stored_salt, str):
                 stored_salt = bytes.fromhex(stored_salt)
 
-            # Compute the hash of the provided password
+            # Debugging output
+            print(f"Converted salt (bytes): {stored_salt}")
+
+            # Compute the hash of the provided password using the retrieved salt
             computed_hash = self.__hash_password(password, stored_salt)
+
+            # Debugging output
+            print(f"Computed hash: {computed_hash}")
 
             # Compare the computed hash with the stored hash
             if stored_hash == computed_hash:
@@ -71,7 +83,7 @@ class Database:
         try:
             connection, cursor = self.__createConnection()
 
-            if not self.checkUserName(username):
+            if self.checkUserName(username):
                 raise UsernameAlreadyExistsError(f"Username '{username}' is already taken.")
 
             salt = self.__generate_salt()
@@ -88,13 +100,13 @@ class Database:
             self.__closeConnection(connection, cursor)
 
     def checkUserName(self, username):
-        """Check if a username is already taken."""
+        #check if user exists in the database
         connection, cursor = None, None
         try:
             connection, cursor = self.__createConnection()
             query = "SELECT 1 FROM Users WHERE user_name = ?"
             cursor.execute(query, [username])
-            return cursor.fetchone() is None
+            return cursor.fetchone() is not None
         except Exception as error:
             print(f"Error checking username: {error}")
             return False
@@ -102,13 +114,23 @@ class Database:
             self.__closeConnection(connection, cursor)
 
     def __hash_password(self, password, salt):
-        """Hash the password using SHA-256 with a salt."""
+        """
+        Generate a secure hash of a password using a salt.
+
+        Parameters:
+        password (str): The password to be hashed.
+        salt (str or bytes): The salt to be used for hashing. If a string is provided, it will be converted to bytes.
+
+        Returns:
+        str: The hashed password as a hexadecimal string.
+        """
         # Ensure salt is in bytes
         if isinstance(salt, str):
             salt = bytes.fromhex(salt)
+        # Combine salt and password securely
         salted_password = salt + password.encode('utf-8')
+        # Return the hash as a hexadecimal string
         return hashlib.sha256(salted_password).hexdigest()
 
     def __generate_salt(self):
-        """Generate a random 16-byte salt."""
         return secrets.token_bytes(16)  # Return salt as bytes

@@ -33,7 +33,8 @@ def logIn():
     user.log_in()
 
 def signUp():
-    print()
+    global user
+    user.create_new_user()
 
 def startNewBudget():
     global track
