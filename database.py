@@ -40,26 +40,12 @@ class Database:
             if not result:
                 print("Error: Could not retrieve user credentials.")
                 return -1  # General error
-
             stored_hash, stored_salt = result
-
-            # Debugging output
-            print(f"Stored hash: {stored_hash}")
-            print(f"Stored salt (hex): {stored_salt}")
-
             # Ensure the salt is in bytes
             if isinstance(stored_salt, str):
                 stored_salt = bytes.fromhex(stored_salt)
-
-            # Debugging output
-            print(f"Converted salt (bytes): {stored_salt}")
-
             # Compute the hash of the provided password using the retrieved salt
             computed_hash = self.__hash_password(password, stored_salt)
-
-            # Debugging output
-            print(f"Computed hash: {computed_hash}")
-
             # Compare the computed hash with the stored hash
             if stored_hash == computed_hash:
                 print("Login successful.")
@@ -67,13 +53,11 @@ class Database:
             else:
                 print("Password is incorrect.")
                 return 2  # Incorrect password
-
         except Exception as error:
             print(f"Error logging in: {error}")
             return -1  # General error
         finally:
             self.__closeConnection(connection, cursor)
-
 
 
     def create_new_user(self, username, password):
@@ -177,4 +161,58 @@ class Database:
             print(f"Error getting current spent: {error}")
         finally:
             self.__closeConnection(connection, cursor)
-            
+
+    def checkIfAdmin(self, username):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            adminQuery = "SELECT 1 FROM Users WHERE user_name = ? AND role_name = 'admin'"
+            cursor.execute(adminQuery, [username])
+            return cursor.fetchone() is not None
+        except Exception as error:
+            print(f"Error checking if admin: {error}")
+            return False
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def getAllCategories(self):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            categoriesQuery = "SELECT category_name FROM Categories"
+            cursor.execute(categoriesQuery)
+            categories = cursor.fetchall()
+            # Extract category names from the list of tuples
+            return [category[0] for category in categories]
+        except Exception as error:
+            print(f"Error getting categories: {error}")
+            return []  # Return an empty list on error
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    #FIXME: This method is nto properly implemented. It is going into the exception block saying "Erro adding expense: unspported perand types(s_ for +: 'BNoneType' and 'float')
+
+    
+    def addExpense(self, username, category, item, amount):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+
+            # Get the current spent amount and budget for the user
+            currentSpend = self.getCurrentSpent(username)
+            budget = self.getCurrentBudget(username)
+
+            # Check if the new expense exceeds the budget
+            if currentSpend + amount > budget:
+                print("Error: Exceeds the budget.")
+                return
+
+            # Insert the new expense
+            expenseQuery = "INSERT INTO Items (item_name, price, category_name, user_name) VALUES (?, ?, ?, ?)"
+            cursor.execute(expenseQuery, [item, amount, category, username])
+            connection.commit()
+            print(f"Expense '{item}' added for user '{username}' under category '{category}' with amount ${amount:.2f}.")
+        except Exception as error:
+            print(f"Error adding expense: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
