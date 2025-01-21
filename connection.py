@@ -87,9 +87,9 @@ class Connection:
                 self.admin.reviewAllExpenses()
         elif choice == 5:
             if self.user:
-                self.user.reviewCategoryExpenses()
+                self.user.reviewExpensesByCategory()
             elif self.admin:
-                self.admin.reviewCategoryExpenses()
+                self.admin.reviewExpensesByCategory()
 
     def __printOptions(self):
         """Prints available options based on login state."""

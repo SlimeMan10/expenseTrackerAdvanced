@@ -6,7 +6,7 @@ class User:
     def __init__(self, userName):
         self.user_name = userName
 
-    def addExpense(self):
+    def __getCategories(self):
         categories = db.getAllCategories()
         length = len(categories)
         for i in range(length):
@@ -20,7 +20,10 @@ class User:
             except ValueError:
                 print("Enter a valid number (0 to 5)")
                 print()
-        category = categories[category_index-1]
+        return categories[category_index-1]
+
+    def addExpense(self):
+        category = self.__getCategories()
         item = input("Enter the item: ")
         while True:
             try:
@@ -58,5 +61,17 @@ class User:
             data = db.getAllExpenses(self.user_name)
             for expense in data:
                 print(f"Item: {expense[0]}, costs: ${expense[1]}.")
+        else:
+            print("You need to log in first.")
+
+    def reviewExpensesByCategory(self):
+        if (self.isLoggedIn()):
+            category = self.__getCategories()
+            data = db.getExpensesByCategory(self.user_name, category)
+            if data:
+                for expense in data:
+                    print(f"Item: {expense[0]}, costs: ${expense[1]}.")
+            else:
+                print(f"No expenses found for category: {category}.")
         else:
             print("You need to log in first.")

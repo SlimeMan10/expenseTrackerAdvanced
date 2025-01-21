@@ -230,3 +230,16 @@ class Database:
             print(f"Error getting expenses: {error}")
         finally:
             self.__closeConnection(connection, cursor)
+
+    def getExpensesByCategory(self, username, category):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            query = "SELECT item_name, price FROM Items WHERE user_name = ? AND category_name =? ORDER BY price DESC"
+            cursor.execute(query, [username, category])
+            expenses = cursor.fetchall()
+            return expenses
+        except Exception as error:
+            print(f"Error getting expenses by category: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
