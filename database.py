@@ -216,3 +216,17 @@ class Database:
             print(f"Error adding expense: {error}")
         finally:
             self.__closeConnection(connection, cursor)
+
+    #TODO: Implement this method to get all expenses for a given user and category
+    def getAllExpenses(self, username):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            query = "SELECT item_name, price FROM Items WHERE user_name = ? ORDER BY price DESC"
+            cursor.execute(query, [username])
+            expenses = cursor.fetchall()
+            return expenses
+        except Exception as error:
+            print(f"Error getting expenses: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)

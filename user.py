@@ -51,3 +51,12 @@ class User:
         if (self.user_name):
             return True
         return False
+    
+    def reviewAllExpenses(self):
+        global db
+        if (self.isLoggedIn()):
+            data = db.getAllExpenses(self.user_name)
+            for expense in data:
+                print(f"Item: {expense[0]}, costs: ${expense[1]}.")
+        else:
+            print("You need to log in first.")

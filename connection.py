@@ -179,10 +179,3 @@ class Connection:
             self.user.getCurrentSpending()
         elif self.admin:
             self.admin.getCurrentSpending()
-
-    def printCategories(self, category):
-        """Prints categories for the logged-in user/admin."""
-        if self.user:
-            self.user.printCategories(category)
-        elif self.admin:
-            self.admin.printCategories(category)
