@@ -192,7 +192,6 @@ class Database:
         finally:
             self.__closeConnection(connection, cursor)
 
-    #FIXME: This method is nto properly implemented. It is going into the exception block saying "Erro adding expense: unspported perand types(s_ for +: 'BNoneType' and 'float')
     def addExpense(self, username, category, item, amount):
         connection, cursor = None, None
         try:
@@ -241,5 +240,93 @@ class Database:
             return expenses
         except Exception as error:
             print(f"Error getting expenses by category: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def getAllUsers(self):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            query = "SELECT user_name FROM Users"
+            cursor.execute(query)
+            users = cursor.fetchall()
+            return users
+        except Exception as error:
+            print(f"Error getting users: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
+    
+    def setBudget(self, username, budget):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            if username:
+                budgetQuery = "UPDATE Users SET budget = ? WHERE user_name = ?"
+                cursor.execute(budgetQuery, [budget, username])
+                connection.commit()
+                print(f"Budget updated for user '{username}'.")
+            else:
+                allUsersQuery = "UPDATE Users SET budget = ?"
+                cursor.execute(allUsersQuery, [budget])
+                connection.commit()
+                print(f"Budget updated for all users.")
+        except Exception as error:
+            print(f"Error updating budget: {error}")
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def deleteUser(self, username):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            cursor.execute("DELETE FROM users WHERE username=?", [username])
+            connection.commit()
+            print(f"{username} deleted successfully!")
+        except Exception as error:
+            print(f"Error deleting user: {error}")
+            connection.rollback()
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def makeNewAdmin(self, username):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            cursor.execute("UPDATE users SET role_name='admin' WHERE username=?", [username])
+            connection.commit()
+            print(f"{username} made an admin successfully!")
+        except Exception as error:
+            print(f"Error making new admin: {error}")
+            connection.rollback()
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def addNewCategory(self, category):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            cursor.execute("INSERT INTO Categories (category_name) VALUES (?)", category)
+            connection.commit()
+            print(f"{category} added successfully!")
+        except Exception as error:
+            print(f"Error adding new category: {error}")
+            connection.rollback()
+        finally:
+            self.__closeConnection(connection, cursor)
+
+    def viewAllSpendingHistory(self, username=None):
+        connection, cursor = None, None
+        try:
+            connection, cursor = self.__createConnection()
+            if username:
+                query = "SELECT category_name, item_name, price FROM Items WHERE user_name =? ORDER BY category_name DESC"
+                cursor.execute(query, [username])
+            else:
+                query = "SELECT category_name, user_name, item_name, price FROM Items ORDER BY category_name DESC"
+                cursor.execute(query)
+            spendingHistory = cursor.fetchall()
+            return spendingHistory
+        except Exception as error:
+            print(f"Error getting spending history: {error}")
         finally:
             self.__closeConnection(connection, cursor)

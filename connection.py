@@ -117,11 +117,15 @@ class Connection:
             print("Login first.")
 
     def logIn(self):
-        """Handles the user login process."""
         global db
+        print("Type exit whenever you want to exit.")
         user_name = self._verify_input("Enter your username: ", "Username cannot be empty")
         password = self._verify_input("Enter your password: ", "Password cannot be empty")
         while True:
+            if user_name.lower() == "exit":
+                break
+            if password.lower() == "exit":
+                break
             condition = db.logIn(user_name, password)
             if condition == 0:
                 print(f"Welcome, {user_name}!")
@@ -134,17 +138,26 @@ class Connection:
         if adminOrNot:
             self.admin = Admin(user_name)
             print("You are an admin!")
-        else:
+        elif user_name.lower() != "exit" and password.lower() != "exit":
             self.user = User(user_name)
             print("You are a regular user!")
+        else:
+            print("Exiting the login process.")
 
     def signUp(self):
         global db
         while True:
+            print("Type exit whenever you want to exit.")
             user_name = self._verify_input("Enter your username: ", "Username cannot be empty")
+            if user_name.lower() == "exit":
+                break
             if not db.checkUserName(user_name): 
                 break
+        if user_name.lower() == "exit":
+            return None
         password = self._verify_input("Enter password: ", "Password cannot be empty")
+        if password.lower() == "exit":
+            return None
         db.create_new_user(user_name, password)
         print("User created successfully!")
         self.user = User(user_name)
@@ -179,3 +192,5 @@ class Connection:
             self.user.getCurrentSpending()
         elif self.admin:
             self.admin.getCurrentSpending()
+
+    
