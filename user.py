@@ -47,14 +47,6 @@ class User:
         else:
             print("You need to log in first.")
 
-    def printCategories(self):
-        print("0. Logout")
-        print("1. get current budget")
-        print("2. get current spent")
-        print("3. add new expense")
-        print("4. Review All Expenses")
-        print("5. Review Category Expenses")
-
     def isLoggedIn(self):
         if (self.user_name):
             return True

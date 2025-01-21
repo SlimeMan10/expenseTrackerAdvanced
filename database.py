@@ -144,6 +144,7 @@ class Database:
             cursor.execute(budgetQuery, [username])
             budget = cursor.fetchone()[0]
             print(f"Current budget for user '{username}': ${budget}")
+            return budget
         except Exception as error:
             print(f"Error getting current budget: {error}")
         finally:
@@ -157,6 +158,7 @@ class Database:
             cursor.execute(spendQuery, [username])
             currentSpend = cursor.fetchone()[0]
             print(f"{username}'s current total spent: ${currentSpend}")
+            return currentSpend
         except Exception as error:
             print(f"Error getting current spent: {error}")
         finally:
@@ -191,8 +193,6 @@ class Database:
             self.__closeConnection(connection, cursor)
 
     #FIXME: This method is nto properly implemented. It is going into the exception block saying "Erro adding expense: unspported perand types(s_ for +: 'BNoneType' and 'float')
-
-    
     def addExpense(self, username, category, item, amount):
         connection, cursor = None, None
         try:
